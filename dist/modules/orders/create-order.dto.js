@@ -9,42 +9,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Order = void 0;
-const typeorm_1 = require("typeorm");
-let Order = class Order {
-    id;
+exports.CreateOrderDto = void 0;
+const class_validator_1 = require("class-validator");
+const swagger_1 = require("@nestjs/swagger");
+class CreateOrderDto {
     idempotencyKey;
     productId;
     quantity;
-    status;
-    createdAt;
-};
-exports.Order = Order;
+}
+exports.CreateOrderDto = CreateOrderDto;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    (0, swagger_1.ApiProperty)({ example: 'unique-key-123' }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Order.prototype, "id", void 0);
+], CreateOrderDto.prototype, "idempotencyKey", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, swagger_1.ApiProperty)({ example: 'product-uuid-123' }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Order.prototype, "idempotencyKey", void 0);
+], CreateOrderDto.prototype, "productId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Order.prototype, "productId", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, swagger_1.ApiProperty)({ example: 2 }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
     __metadata("design:type", Number)
-], Order.prototype, "quantity", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: 'pending' }),
-    __metadata("design:type", String)
-], Order.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], Order.prototype, "createdAt", void 0);
-exports.Order = Order = __decorate([
-    (0, typeorm_1.Entity)()
-], Order);
-//# sourceMappingURL=order.entity.js.map
+], CreateOrderDto.prototype, "quantity", void 0);
+//# sourceMappingURL=create-order.dto.js.map

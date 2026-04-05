@@ -15,6 +15,7 @@ const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const database_config_1 = __importDefault(require("./config/database.config"));
 const products_module_1 = require("./modules/products/products.module");
+const orders_module_1 = require("./modules/orders/orders.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -39,6 +40,7 @@ exports.AppModule = AppModule = __decorate([
                 }),
             }),
             products_module_1.ProductsModule,
+            orders_module_1.OrdersModule
         ],
     })
 ], AppModule);
