@@ -11,16 +11,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var OrderService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const order_entity_1 = require("./order.entity");
-let OrderService = class OrderService {
+const notifications_service_1 = require("../notifications/notifications.service");
+let OrderService = OrderService_1 = class OrderService {
     orderRepository;
-    constructor(orderRepository) {
+    notificationsService;
+    logger = new common_1.Logger(OrderService_1.name);
+    constructor(orderRepository, notificationsService) {
         this.orderRepository = orderRepository;
+        this.notificationsService = notificationsService;
     }
     async create(dto) {
         const existingOrder = await this.orderRepository.findOne({
@@ -31,7 +36,14 @@ let OrderService = class OrderService {
         }
         try {
             const order = this.orderRepository.create(dto);
-            return await this.orderRepository.save(order);
+            const saved = await this.orderRepository.save(order);
+            try {
+                await this.notificationsService.sendOrderNotification('user-device-token', saved.id);
+            }
+            catch {
+                this.logger.warn('Notification failed - no valid FCM token');
+            }
+            return saved;
         }
         catch (error) {
             if (error.code === '23505') {
@@ -48,9 +60,10 @@ let OrderService = class OrderService {
     }
 };
 exports.OrderService = OrderService;
-exports.OrderService = OrderService = __decorate([
+exports.OrderService = OrderService = OrderService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(order_entity_1.Order)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        notifications_service_1.NotificationsService])
 ], OrderService);
 //# sourceMappingURL=order.service.js.map

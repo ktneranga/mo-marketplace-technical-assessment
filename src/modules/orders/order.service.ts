@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common'
+import {Injectable, Logger} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Order } from './order.entity'
@@ -7,6 +7,8 @@ import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class OrderService {
+  private readonly logger = new Logger(OrderService.name);
+
   constructor(
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
@@ -26,7 +28,11 @@ export class OrderService {
         const order = this.orderRepository.create(dto);
         const saved = await this.orderRepository.save(order);
 
-        await this.notificationsService.sendOrderNotification('user-device-token', saved.id);
+        try {
+          await this.notificationsService.sendOrderNotification('user-device-token', saved.id);
+        } catch {
+          this.logger.warn('Notification failed - no valid FCM token');
+        }
 
         return saved;
 
