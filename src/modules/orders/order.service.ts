@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Order } from './order.entity'
 import { CreateOrderDto } from './create-order.dto'
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
+    private notificationsService: NotificationsService
   ) {}
 
   async create(dto: CreateOrderDto): Promise<Order> {
@@ -22,7 +24,12 @@ export class OrderService {
 
     try {
         const order = this.orderRepository.create(dto);
-        return await this.orderRepository.save(order);
+        const saved = await this.orderRepository.save(order);
+
+        await this.notificationsService.sendOrderNotification('user-device-token', saved.id);
+
+        return saved;
+
     } catch (error: any) {
         if(error.code === '23505') {
             const existingOrder = await this.orderRepository.findOne({
